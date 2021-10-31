@@ -79,8 +79,7 @@ async function run() {
       console.log(result);
     });
 
-
-    // get all order by email query
+    // get order by specific email address
     app.get("/myOrders/:email", async (req, res) => {
       const query = { email: req.params.email };
       const result = await orderCollection.find(query).toArray();
@@ -90,28 +89,35 @@ async function run() {
       // console.log(result);
     });
 
-
     // DELETE API
-      app.delete("/myOrders/:id", async (req, res) => {
-        const id = req.params.id;
-        const query = { _id: ObjectId(id) };
-        const result = await orderCollection.deleteOne(query);
-        res.json(result);
-        
-        // console.log("deleting order with id ", result);
-      });
+    app.delete("/myOrders/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await orderCollection.deleteOne(query);
+      res.json(result);
 
+      // console.log("deleting order with id ", result);
+    });
 
+    // Update status
+    app.put("/update/:id", async (req, res) => {
+      const id = req.params.id;
+      const updatedStatus = req.body;
 
+      // console.log('body', req.body);
+      // console.log('id', id);
 
+      const filter = { _id: ObjectId(id) };
 
+      const updateOrderStatus = {
+        $set: {
+          status: updatedStatus.status,
+        },
+      };
 
-
-
-
-
-
-
+      const result = await orderCollection.updateOne(filter, updateOrderStatus);
+      res.json(result);
+    });
 
 
   } finally {
